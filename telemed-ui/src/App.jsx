@@ -18,7 +18,7 @@ function Shell({ children }) {
                     <nav className="flex items-center gap-4 text-sm">
                         <NavLink to="/" className={({ isActive }) => `hover:underline ${isActive && loc.pathname === '/' ? 'font-semibold' : ''}`}>Identity</NavLink>
                         <NavLink to="/consultations" className={({ isActive }) => `hover:underline ${isActive ? 'font-semibold' : ''}`}>Consultations</NavLink>
-                        <a href={API_BASE} target="_blank" rel="noreferrer" className="text-slate-500 underline">Open API</a>
+                        
                     </nav>
                 </header>
                 {children}

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 public final class MediaContent implements MessageContent {
-  private final String storageKey; // e.g., local:/..., s3://...
+  private final String storageKey; // e.g. local:/...
   private final String mimeType;
   private final long sizeBytes;
 

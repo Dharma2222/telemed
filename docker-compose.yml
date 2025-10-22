@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: telemed-mongo
+    ports:
+      - "27017:27017"
+    # use a named tmpfs instead of a disk volume (auto-clears on restart)
+    tmpfs:
+      - /data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "mongodb://localhost:27017/test", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    build:
+      context: ./telemed-backend
+      dockerfile: Dockerfile
+    container_name: telemed-backend
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/test
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  seed:
+    build:
+      context: ./seed              # project root (where the 'seed/' folder lives)
+      dockerfile: Dockerfile  # path to the seeder Dockerfile
+    container_name: telemed-seeder
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      API: http://backend:8080   # backend accessible via Docker network
+    restart: "no"  
+  ui:
+    build:
+      context: ./telemed-ui
+      dockerfile: Dockerfile
+    container_name: telemed-ui
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "5173:5173"       
+    restart: unless-stopped
